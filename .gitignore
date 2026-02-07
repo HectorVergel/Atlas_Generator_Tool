@@ -1,0 +1,29 @@
+# --- Visual Studio ---
+.vs/
+out/
+build/
+bin/
+obj/
+
+# --- Archivos de usuario y temporales ---
+*.user
+*.suo
+*.sln.doccache
+*.vstoken
+
+# --- CMake ---
+CMakeSettings.json
+CMakeUserPresets.json
+/CMakeFiles/
+/_deps/
+/CMakeScripts/
+cmake_install.cmake
+CMakeCache.txt
+
+# --- Compilación ---
+*.exe
+*.dll
+*.lib
+*.pdb
+*.obj
+*.ilk
