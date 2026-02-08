@@ -10,7 +10,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(SOURCES
     src/Atlastor_Tool.cpp
-  "src/AtlasPacker.cpp")
+    src/AtlasPacker.cpp
+    src/stb_image_impl.cpp
+)
 
 set(HEADERS
   "src/AtlasPacker.h")
