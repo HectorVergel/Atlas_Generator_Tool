@@ -12,10 +12,14 @@ set(SOURCES
     src/Atlastor_Tool.cpp
     src/AtlasPacker.cpp
     src/stb_image_impl.cpp
+    src/AtlasRectPacker.cpp
 )
 
 set(HEADERS
-  "src/AtlasPacker.h")
+  "src/AtlasPacker.h"
+   "src/AtlasRectPacker.h"
+    "src/AtlasPackerTypes.h"
+)
 
 add_executable(${PROJECT_NAME}
     ${SOURCES}

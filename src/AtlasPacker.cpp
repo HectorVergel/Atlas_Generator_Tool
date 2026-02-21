@@ -1,4 +1,5 @@
 #include "AtlasPacker.h"
+#include "AtlasRectPacker.h"
 #include <unordered_set>
 
 namespace fs = std::filesystem;
@@ -9,9 +10,16 @@ void AtlasPacker::Pack(const sOptions& aOptions)
 	EnumerateImages();
 	LoadImagesInfo();
 	
-	if(ValidateImages)
+	if(!ValidateImages())
 	{
+		return;
+	}
 
+	AtlasRectPacker RectPacker;
+
+	if(!RectPacker.Pack(mImages, mOptions.AtlasSize, mOptions.Padding))
+	{
+		return;
 	}
 }
 
@@ -58,7 +66,7 @@ void AtlasPacker::LoadImagesInfo()
 
 bool AtlasPacker::ValidateImages()
 {
-	bool Result(false);
+	bool Result(true);
 	std::unordered_set<std::string> ImagesNames;
 
 	for(const auto& Image : mImages)
@@ -66,23 +74,23 @@ bool AtlasPacker::ValidateImages()
 		if(Image.Height <= 0 ||Image.Width <= 0)
 		{
 			LOG("VALIDATION ERROR: Invalid image size: " + Image.Name);
-			return Result;
+			Result = false;
 		}
 		else if(Image.Height > mOptions.AtlasSize || Image.Width > mOptions.AtlasSize)
 		{
 			LOG("VALIDATION ERROR: Image is larger than atlas: " + Image.Name);
-			return Result;
+			Result = false;
 		}
 		else if(Image.Channels != 3 && Image.Channels != 4)
 		{
 			LOG("VALIDATION ERROR: Unsupported channels: " + Image.Name);
-			return Result;
+			Result = false;
 		}
 		else if(!ImagesNames.insert(Image.Name).second)
 		{
 			LOG("VALIDATION ERROR: Duplicated name with image: " + Image.Name);
-			return Result;
+			Result = false;
 		}
 	}
-	return true;
+	return Result;
 }
