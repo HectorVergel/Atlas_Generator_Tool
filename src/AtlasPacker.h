@@ -17,6 +17,7 @@ private:
 	void EnumerateImages();
 	void LoadImagesInfo();
 	bool ValidateImages();
+	void BuildAtlas();
 
 	sOptions mOptions;
 	std::vector<fs::path> mImagesPaths;

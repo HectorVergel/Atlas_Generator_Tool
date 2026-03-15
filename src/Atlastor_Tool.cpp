@@ -2,8 +2,6 @@
 
 int main(int argc, char* argv[])
 {
-	std::cout << "Hello CMake." << std::endl;
-
 	sOptions Options;
 
 	Options.InputPath = argv[1];

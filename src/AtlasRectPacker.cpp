@@ -21,14 +21,20 @@ bool AtlasRectPacker::Pack(std::vector<sImageInfo>& aImages, int aAtlasSize, int
 	
 	bool InsertionFailed = false;
 
-	const auto HandleUnsuccessfulInsertion = [&InsertionFailed]() {
-		InsertionFailed = false;
+	const auto HandleSuccessfulInsertion = [](auto&) {
+		bool InsertionFailed = false;
+		return rectpack2D::callback_result::CONTINUE_PACKING;
+	};
+
+	const auto HandleUnsuccessfulInsertion = [&InsertionFailed](auto&) {
+		InsertionFailed = true;
+		return rectpack2D::callback_result::CONTINUE_PACKING;
 	};
 
 	const auto FinderInput = rectpack2D::make_finder_input(
 		aAtlasSize,
 		1,
-		NULL,
+		HandleSuccessfulInsertion,
 		HandleUnsuccessfulInsertion,
 		rectpack2D::flipping_option::DISABLED
 	);

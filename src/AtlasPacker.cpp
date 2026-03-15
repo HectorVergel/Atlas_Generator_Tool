@@ -1,6 +1,8 @@
 #include "AtlasPacker.h"
 #include "AtlasRectPacker.h"
 #include <unordered_set>
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "stb_image_write.h"
 
 namespace fs = std::filesystem;
 
@@ -79,6 +81,9 @@ bool AtlasPacker::ValidateImages()
 		else if(Image.Height > mOptions.AtlasSize || Image.Width > mOptions.AtlasSize)
 		{
 			LOG("VALIDATION ERROR: Image is larger than atlas: " + Image.Name);
+			LOG(Image.Height);
+			LOG(Image.Width);
+			LOG(mOptions.AtlasSize);
 			Result = false;
 		}
 		else if(Image.Channels != 3 && Image.Channels != 4)
@@ -93,4 +98,64 @@ bool AtlasPacker::ValidateImages()
 		}
 	}
 	return Result;
+}
+
+void AtlasPacker::BuildAtlas()
+{
+
+	if (mImages.empty())
+	{
+		LOG("No images to build atlas.");
+		return;
+	}
+
+	const int Channels = 4; // RGBA
+	const int AtlasSize = mOptions.AtlasSize;
+
+	std::vector<unsigned char> AtlasBuffer(AtlasSize * AtlasSize * Channels, 0);
+
+	for (const auto& Img : mImages)
+	{
+		int w, h, c;
+		unsigned char* ImageData = stbi_load(Img.Path.string().c_str(), &w, &h, &c, Channels);
+		if (!ImageData)
+		{
+			LOG("Failed to load image: " + Img.Name);
+			continue;
+		}
+
+		// Copiar la imagen al atlas
+		for (int y = 0; y < h; ++y)
+		{
+			for (int x = 0; x < w; ++x)
+			{
+				int SrcIndex = (y * w + x) * Channels;
+				int DestinationX = Img.Position.x + x;
+				int DestinationY = Img.Position.y + y;
+				int DestinationIndex = (DestinationY * AtlasSize + DestinationX) * Channels;
+
+				for (int ch = 0; ch < Channels; ++ch)
+				{
+					AtlasBuffer[DestinationIndex + ch] = ImageData[SrcIndex + ch];
+				}
+			}
+		}
+
+		stbi_image_free(ImageData);
+	}
+
+	std::string outputPath = mOptions.OutputPath;
+	if (outputPath.empty())
+		outputPath = "atlas.png";
+
+	if (!stbi_write_png(outputPath.c_str(), AtlasSize, AtlasSize, Channels,
+		AtlasBuffer.data(), AtlasSize * Channels))
+	{
+		LOG("Failed to write atlas PNG.");
+	}
+	else
+	{
+		LOG("Atlas successfully saved to: " + outputPath);
+	}
+	
 }
