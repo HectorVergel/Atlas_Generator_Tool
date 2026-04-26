@@ -21,7 +21,7 @@ struct sOptions
 {
 	std::string InputPath;
 	std::string OutputPath = "atlas.png";
-	u8 AtlasSize = 1024;
+	int AtlasSize = 1024;
 	u8 Padding = 2;
 };
 

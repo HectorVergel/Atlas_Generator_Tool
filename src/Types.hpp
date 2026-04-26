@@ -12,8 +12,8 @@ namespace
 	using u32 = std::uint32_t;
 	struct Vector2
 	{
-		u8 x = 0;
-		u8 y = 0;
+		int x = 0;
+		int y = 0;
 	};
 }
 

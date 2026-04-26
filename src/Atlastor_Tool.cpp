@@ -2,6 +2,10 @@
 
 int main(int argc, char* argv[])
 {
+
+    std::cout << "Press ENTER to start debugging...";
+    std::cin.get();
+
 	sOptions Options;
 
 	Options.InputPath = argv[1];

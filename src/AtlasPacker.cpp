@@ -23,6 +23,8 @@ void AtlasPacker::Pack(const sOptions& aOptions)
 	{
 		return;
 	}
+
+	BuildAtlas();
 }
 
 void AtlasPacker::EnumerateImages()
