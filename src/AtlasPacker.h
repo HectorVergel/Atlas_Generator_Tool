@@ -15,7 +15,6 @@ public:
 private:
 
 	void EnumerateImages();
-	void LoadImagesInfo();
 	bool ValidateImages();
 	void BuildAtlas();
 

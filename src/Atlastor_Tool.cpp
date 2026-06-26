@@ -19,6 +19,9 @@ int main(int argc, char* argv[])
         else if (arg == "--out" && i + 1 < argc) {
             Options.OutputPath = argv[++i];
         }
+        else if (arg == "--padding" && i + 1 < argc) {
+            Options.Padding = std::stoi(argv[++i]);
+        }
         else {
             std::cerr << "Unknown argument: " << arg << "\n";
             return 1;

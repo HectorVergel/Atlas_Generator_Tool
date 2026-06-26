@@ -10,7 +10,6 @@ void AtlasPacker::Pack(const sOptions& aOptions)
 {
 	mOptions = aOptions;
 	EnumerateImages();
-	LoadImagesInfo();
 	
 	if(!ValidateImages())
 	{
@@ -29,41 +28,27 @@ void AtlasPacker::Pack(const sOptions& aOptions)
 
 void AtlasPacker::EnumerateImages()
 {
+	mImages.clear();
 	const auto Folder = fs::path(mOptions.InputPath);
-	mImagesPaths.clear();
-	
-	for(const auto& File : fs::directory_iterator(Folder))
+
+	for (const auto& File : fs::directory_iterator(Folder))
 	{
-		if (!File.is_regular_file()) 
-		{
-			continue;
-		}
+		if (!File.is_regular_file()) continue;
 
 		const auto Extension = File.path().extension().string();
-		if (Extension == ".png" || Extension == ".jpg") 
-		{
-			mImagesPaths.emplace_back(File.path());
-		}
-	}
-}
+		if (Extension != ".png" && Extension != ".jpg") continue;
 
-void AtlasPacker::LoadImagesInfo()
-{
-	mImages.clear();
-
-	for (const auto& Path : mImagesPaths) 
-	{
 		sImageInfo ImageInfo;
-		ImageInfo.Path = Path;
-		ImageInfo.Name = Path.stem().string();
+		ImageInfo.Path = File.path();
+		ImageInfo.Name = File.path().stem().string();
 
-		if(stbi_info(Path.string().c_str(), &ImageInfo.Width, &ImageInfo.Height, &ImageInfo.Channels))
+		if (stbi_info(ImageInfo.Path.string().c_str(), &ImageInfo.Width, &ImageInfo.Height, &ImageInfo.Channels))
 		{
-			mImages.push_back(ImageInfo);
+			mImages.push_back(std::move(ImageInfo));
 		}
-		else 
+		else
 		{
-			LOG("LOAD WARNING: Invalid image found: " + ImageInfo.Name + " with the following path: " + ImageInfo.Path.string());
+			LOG("LOAD WARNING: Invalid image: " + ImageInfo.Name);
 		}
 	}
 }
@@ -83,9 +68,6 @@ bool AtlasPacker::ValidateImages()
 		else if(Image.Height > mOptions.AtlasSize || Image.Width > mOptions.AtlasSize)
 		{
 			LOG("VALIDATION ERROR: Image is larger than atlas: " + Image.Name);
-			LOG(Image.Height);
-			LOG(Image.Width);
-			LOG(mOptions.AtlasSize);
 			Result = false;
 		}
 		else if(Image.Channels != 3 && Image.Channels != 4)
@@ -126,7 +108,7 @@ void AtlasPacker::BuildAtlas()
 			continue;
 		}
 
-		// Copiar la imagen al atlas
+		// Copy image to atlas.
 		for (int y = 0; y < h; ++y)
 		{
 			for (int x = 0; x < w; ++x)
@@ -146,18 +128,20 @@ void AtlasPacker::BuildAtlas()
 		stbi_image_free(ImageData);
 	}
 
-	std::string outputPath = mOptions.OutputPath;
-	if (outputPath.empty())
-		outputPath = "atlas.png";
+	std::string OutputPath = mOptions.OutputPath;
+	if (OutputPath.empty()) 
+	{
+		OutputPath = "atlas.png";
+	}
 
-	if (!stbi_write_png(outputPath.c_str(), AtlasSize, AtlasSize, Channels,
+	if (!stbi_write_png(OutputPath.c_str(), AtlasSize, AtlasSize, Channels,
 		AtlasBuffer.data(), AtlasSize * Channels))
 	{
 		LOG("Failed to write atlas PNG.");
 	}
 	else
 	{
-		LOG("Atlas successfully saved to: " + outputPath);
+		LOG("Atlas successfully saved to: " + OutputPath);
 	}
 	
 }
