@@ -61,11 +61,17 @@ set(SOURCES
     src/AtlasPacker.cpp
     src/stb_image_impl.cpp
     src/AtlasRectPacker.cpp
+    src/FilesContextWindow.cpp
+    src/SettingsContextWindow.cpp
+
 )
 set(HEADERS
     src/AtlasPacker.h
     src/AtlasRectPacker.h
     src/AtlasPackerTypes.h
+    src/ContextWindow.h
+    src/FilesContextWindow.h
+    src/SettingsContextWindow.h
 )
 add_executable(${PROJECT_NAME}
     ${SOURCES}
